@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: practice-spring-boot
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?serverTimezone=UTC
+    username: root
+    password: paul803
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    separator: //
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/demo
+server:
+  port: 9090
