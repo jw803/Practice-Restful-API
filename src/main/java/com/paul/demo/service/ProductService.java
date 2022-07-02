@@ -1,6 +1,9 @@
 package com.paul.demo.service;
 
+import com.paul.demo.converter.ProductConverter;
 import com.paul.demo.entity.Product;
+import com.paul.demo.request.ProductRequest;
+import com.paul.demo.response.ProductResponse;
 import com.paul.demo.exception.NotFoundException;
 import com.paul.demo.parameter.ProductQueryParameter;
 import com.paul.demo.repository.ProductRepository;
@@ -12,18 +15,26 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Service
 public class ProductService {
 
-    @Autowired
     private ProductRepository repository;
+
+    public ProductService(ProductRepository repository) {
+        this.repository = repository;
+    }
 
     public Product getProduct(String id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Can't find product."));
     }
 
-    public Product createProduct(Product request) {
+    public ProductResponse getProductResponse(String id) {
+        Product product = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Can't find product."));
+        return ProductConverter.toProductResponse(product);
+    }
+
+    public Product createProduct(ProductRequest request) {
         Product product = new Product();
         product.setName(request.getName());
         product.setPrice(request.getPrice());
@@ -31,15 +42,13 @@ public class ProductService {
         return repository.insert(product);
     }
 
-    public Product replaceProduct(String id, Product request) {
+    public Product replaceProduct(String id, ProductRequest request) {
         Product oldProduct = getProduct(id);
 
-        Product product = new Product();
-        product.setId(oldProduct.getId());
-        product.setName(request.getName());
-        product.setPrice(request.getPrice());
+        Product newProduct = ProductConverter.toProduct(request);
+        newProduct.setId(oldProduct.getId());
 
-        return repository.save(product);
+        return repository.save(newProduct);
     }
 
     public void deleteProduct(String id) {

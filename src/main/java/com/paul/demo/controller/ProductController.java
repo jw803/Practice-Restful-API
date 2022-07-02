@@ -1,19 +1,19 @@
 package com.paul.demo.controller;
 
 import com.paul.demo.entity.Product;
+import com.paul.demo.request.ProductRequest;
+import com.paul.demo.response.ProductResponse;
 import com.paul.demo.parameter.ProductQueryParameter;
 import com.paul.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -23,8 +23,8 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable("id") String id) {
-        Product product = productService.getProduct(id);
+    public ResponseEntity<ProductResponse > getProduct(@PathVariable("id") String id) {
+        ProductResponse product = productService.getProductResponse(id);
         return ResponseEntity.ok(product);
     }
 
@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product request) {
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductRequest request) {
         Product product = productService.createProduct(request);
 
         URI location = ServletUriComponentsBuilder
@@ -48,7 +48,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> replaceProduct(@PathVariable("id") String id, @RequestBody Product request) {
+    public ResponseEntity<Product> replaceProduct(@PathVariable("id") String id, @Valid @RequestBody ProductRequest request) {
         Product product = productService.replaceProduct(id, request);
         return ResponseEntity.ok(product);
     }

@@ -1,12 +1,9 @@
-package com.paul.demo.entity;
-
-import org.springframework.data.mongodb.core.mapping.Document;
+package com.paul.demo.response;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
-@Document(collection = "products")
-public class Product {
+public class ProductResponse {
     private String id;
     @NotEmpty
     private String name;
@@ -14,11 +11,11 @@ public class Product {
     @Min(0)
     private int price;
 
-    public Product() {
+    public ProductResponse() {
 
     }
 
-    public Product(String id, String name, int price) {
+    public ProductResponse(String id, String name, int price) {
         this.id = id;
         this.name = name;
         this.price = price;
