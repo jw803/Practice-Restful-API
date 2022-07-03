@@ -1,8 +1,7 @@
 package com.paul.demo.controller;
 
-import com.paul.demo.entity.Product;
-import com.paul.demo.request.ProductRequest;
-import com.paul.demo.response.ProductResponse;
+import com.paul.demo.entity.product.ProductRequest;
+import com.paul.demo.entity.product.ProductResponse;
 import com.paul.demo.parameter.ProductQueryParameter;
 import com.paul.demo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +28,14 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getProducts(@ModelAttribute ProductQueryParameter param) {
-        List<Product> products = productService.getProducts(param);
+    public ResponseEntity<List<ProductResponse>> getProducts(@ModelAttribute ProductQueryParameter param) {
+        List<ProductResponse> products = productService.getProductResponses(param);
         return ResponseEntity.ok(products);
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody ProductRequest request) {
-        Product product = productService.createProduct(request);
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
+        ProductResponse product = productService.createProduct(request);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -48,8 +47,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> replaceProduct(@PathVariable("id") String id, @Valid @RequestBody ProductRequest request) {
-        Product product = productService.replaceProduct(id, request);
+    public ResponseEntity<ProductResponse> replaceProduct(@PathVariable("id") String id, @Valid @RequestBody ProductRequest request) {
+        ProductResponse product = productService.replaceProduct(id, request);
         return ResponseEntity.ok(product);
     }
 

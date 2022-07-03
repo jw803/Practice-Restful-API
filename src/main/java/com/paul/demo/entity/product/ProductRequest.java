@@ -1,4 +1,4 @@
-package com.paul.demo.request;
+package com.paul.demo.entity.product;
 
 
 import javax.validation.constraints.Min;

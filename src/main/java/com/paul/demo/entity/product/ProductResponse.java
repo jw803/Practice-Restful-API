@@ -1,4 +1,4 @@
-package com.paul.demo.response;
+package com.paul.demo.entity.product;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -10,6 +10,8 @@ public class ProductResponse {
 
     @Min(0)
     private int price;
+
+    private String creator;
 
     public ProductResponse() {
 
@@ -43,5 +45,14 @@ public class ProductResponse {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

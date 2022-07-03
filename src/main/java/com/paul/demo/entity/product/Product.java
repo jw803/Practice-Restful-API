@@ -1,4 +1,4 @@
-package com.paul.demo.entity;
+package com.paul.demo.entity.product;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,6 +13,8 @@ public class Product {
 
     @Min(0)
     private int price;
+
+    private String creator;
 
     public Product() {
 
@@ -46,5 +48,13 @@ public class Product {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }

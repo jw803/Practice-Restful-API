@@ -1,8 +1,10 @@
 package com.paul.demo.request;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 public class SendMailRequest {
+
     @NotEmpty
     private String subject;
 
@@ -10,7 +12,7 @@ public class SendMailRequest {
     private String content;
 
     @NotEmpty
-    private String[] receivers;
+    private List<String> receivers;
 
     public String getSubject() {
         return subject;
@@ -28,12 +30,11 @@ public class SendMailRequest {
         this.content = content;
     }
 
-    public String[] getReceivers() {
+    public List<String> getReceivers() {
         return receivers;
     }
 
-    public void setReceivers(String[] receivers) {
+    public void setReceivers(List<String> receivers) {
         this.receivers = receivers;
     }
-
 }

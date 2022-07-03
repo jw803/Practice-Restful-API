@@ -2,11 +2,14 @@ package com.paul.demo.config;
 
 import java.util.Properties;
 
+import com.paul.demo.auth.UserIdentity;
 import com.paul.demo.service.MailService;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
@@ -54,7 +57,9 @@ public class MailConfig {
     // endregion Yahoo Mail
 
     @Bean
-    public MailService mailService() {
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    public MailService mailService(UserIdentity userIdentity) {
+        System.out.println("Mail Service is created.");
         JavaMailSenderImpl mailSender = "gmail".equals(platform)
                 ? gmailSender()
                 : yahooSender();
@@ -64,7 +69,7 @@ public class MailConfig {
         props.put("mail.smtp.starttls.enable", starttlsEnabled);
         props.put("mail.transport.protocol", protocol);
 
-        return new MailService(mailSender);
+        return new MailService(mailSender, userIdentity);
     }
 
     private JavaMailSenderImpl gmailSender() {

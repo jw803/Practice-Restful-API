@@ -1,26 +1,30 @@
 package com.paul.demo.service;
 
+import com.paul.demo.auth.UserIdentity;
 import com.paul.demo.converter.ProductConverter;
-import com.paul.demo.entity.Product;
-import com.paul.demo.request.ProductRequest;
-import com.paul.demo.response.ProductResponse;
+import com.paul.demo.entity.product.Product;
+import com.paul.demo.entity.product.ProductRequest;
+import com.paul.demo.entity.product.ProductResponse;
 import com.paul.demo.exception.NotFoundException;
 import com.paul.demo.parameter.ProductQueryParameter;
 import com.paul.demo.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ProductService {
 
     private ProductRepository repository;
+    private MailService mailService;
+    private UserIdentity userIdentity;
 
-    public ProductService(ProductRepository repository) {
+    public ProductService(ProductRepository repository, MailService mailService,  UserIdentity userIdentity) {
         this.repository = repository;
+        this.mailService = mailService;
+        this.userIdentity = userIdentity;
     }
 
     public Product getProduct(String id) {
@@ -34,35 +38,45 @@ public class ProductService {
         return ProductConverter.toProductResponse(product);
     }
 
-    public Product createProduct(ProductRequest request) {
+    public ProductResponse createProduct(ProductRequest request) {
         Product product = new Product();
         product.setName(request.getName());
         product.setPrice(request.getPrice());
+        product.setCreator(userIdentity.getName());
+        product = repository.insert(product);
 
-        return repository.insert(product);
+        mailService.sendNewProductMail(product.getId());
+
+        return ProductConverter.toProductResponse(product);
     }
 
-    public Product replaceProduct(String id, ProductRequest request) {
+    public ProductResponse replaceProduct(String id, ProductRequest request) {
         Product oldProduct = getProduct(id);
-
         Product newProduct = ProductConverter.toProduct(request);
         newProduct.setId(oldProduct.getId());
+        newProduct.setCreator(oldProduct.getCreator());
 
-        return repository.save(newProduct);
+        repository.save(newProduct);
+
+        return ProductConverter.toProductResponse(newProduct);
     }
 
     public void deleteProduct(String id) {
         repository.deleteById(id);
+        mailService.sendDeleteProductMail(id);
     }
 
-    public List<Product> getProducts(ProductQueryParameter param) {
-        String keyword = Optional.ofNullable(param.getKeyword()).orElse("");
+    public List<ProductResponse> getProductResponses(ProductQueryParameter param) {
+        String nameKeyword = Optional.ofNullable(param.getKeyword()).orElse("");
         int priceFrom = Optional.ofNullable(param.getPriceFrom()).orElse(0);
         int priceTo = Optional.ofNullable(param.getPriceTo()).orElse(Integer.MAX_VALUE);
-
         Sort sort = genSortingStrategy(param.getOrderBy(), param.getSortRule());
 
-        return repository.findByPriceBetweenAndNameLikeIgnoreCase(priceFrom, priceTo, keyword, sort);
+        List<Product> products = repository.findByPriceBetweenAndNameLikeIgnoreCase(priceFrom, priceTo, nameKeyword, sort);
+
+        return products.stream()
+                .map(ProductConverter::toProductResponse)
+                .collect(Collectors.toList());
     }
 
     private Sort genSortingStrategy(String orderBy, String sortRule) {
